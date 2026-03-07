@@ -1,0 +1,20 @@
+node_modules/
+.next/
+out/
+build/
+
+# python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+.env
+
+# mac
+.DS_Store
+
+# logs
+*.log
