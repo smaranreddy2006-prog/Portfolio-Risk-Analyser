@@ -1,9 +1,5 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? ''
-  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
-
 export interface PortfolioItem {
   ticker: string;
   amount: number;
@@ -11,7 +7,7 @@ export interface PortfolioItem {
 }
 
 export const fetchPortfolioAnalysis = async (items: PortfolioItem[]) => {
-  const response = await fetch(`${API_BASE_URL}/api/portfolio/analysis`, {
+  const response = await fetch(`/api/portfolio/analysis`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -28,7 +24,7 @@ export const fetchPortfolioAnalysis = async (items: PortfolioItem[]) => {
 };
 
 export const fetchPortfolioSimulation = async (items: PortfolioItem[]) => {
-  const response = await fetch(`${API_BASE_URL}/api/portfolio/simulation`, {
+  const response = await fetch(`/api/portfolio/simulation`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

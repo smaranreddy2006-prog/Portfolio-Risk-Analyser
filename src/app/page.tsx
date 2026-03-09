@@ -83,7 +83,7 @@ export default function Home() {
         />
 
         <div className="space-y-4 mb-6">
-          <div className="grid grid-cols-12 gap-3 text-sm font-medium text-zinc-400 pb-2 border-b border-white/5 px-2">
+          <div className="hidden md:grid grid-cols-12 gap-3 text-sm font-medium text-zinc-400 pb-2 border-b border-white/5 px-2">
             <div className="col-span-4">Asset Ticker</div>
             <div className="col-span-3">Investment Amount</div>
             <div className="col-span-3">Avg Price Bought (Opt)</div>
@@ -91,8 +91,10 @@ export default function Home() {
           </div>
 
           {items.map((item, index) => (
-            <div key={index} className="grid grid-cols-12 gap-3 items-center group relative">
-              <div className="col-span-4 relative">
+            <div key={index} className="flex flex-col md:grid md:grid-cols-12 gap-3 items-start md:items-center group relative bg-white/5 md:bg-transparent p-4 md:p-0 rounded-xl md:rounded-none border border-white/5 md:border-none">
+
+              <div className="w-full md:col-span-4 relative">
+                <label className="text-xs text-zinc-500 mb-1.5 font-semibold uppercase tracking-wider block md:hidden">Asset Ticker</label>
                 <input
                   type="text"
                   value={item.ticker}
@@ -101,7 +103,8 @@ export default function Home() {
                   className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all uppercase"
                 />
               </div>
-              <div className="col-span-3 relative">
+              <div className="w-full md:col-span-3 relative">
+                <label className="text-xs text-zinc-500 mb-1.5 font-semibold uppercase tracking-wider block md:hidden">Investment Amount</label>
                 <input
                   type="number"
                   value={item.amount || ''}
@@ -110,7 +113,8 @@ export default function Home() {
                   className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-mono"
                 />
               </div>
-              <div className="col-span-3 relative">
+              <div className="w-full md:col-span-3 relative">
+                <label className="text-xs text-zinc-500 mb-1.5 font-semibold uppercase tracking-wider block md:hidden">Avg Price Bought (Optional)</label>
                 <input
                   type="number"
                   value={item.avg_price || ''}
@@ -119,13 +123,14 @@ export default function Home() {
                   className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-mono"
                 />
               </div>
-              <div className="col-span-2 text-right flex justify-end">
+              <div className="w-full md:col-span-2 flex justify-end mt-2 md:mt-0 pt-3 md:pt-0 border-t border-white/5 md:border-none">
                 <button
                   onClick={() => removeItem(index)}
                   disabled={items.length <= 1}
-                  className="p-2.5 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-zinc-500"
+                  className="p-2 w-full md:w-auto flex items-center justify-center gap-2 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-zinc-500"
                 >
-                  <Trash2 size={18} />
+                  <Trash2 size={16} />
+                  <span className="text-sm font-medium block md:hidden">Remove Asset</span>
                 </button>
               </div>
             </div>

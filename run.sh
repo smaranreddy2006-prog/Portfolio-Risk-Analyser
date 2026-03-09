@@ -26,7 +26,7 @@ trap cleanup SIGINT SIGTERM
 
 # 1. Start the Backend
 echo "-> Checking Backend..."
-cd backend
+cd api
 
 # Create venv if it doesn't exist
 if [ ! -d "venv" ]; then
@@ -37,22 +37,18 @@ fi
 # Activate venv and install dependencies if needed
 source venv/bin/activate
 
-# Assuming basic dependencies are installed as we already ran it locally, 
-# but a user cloning it will need to install them.
-# We don't have a requirements.txt yet, so let's quickly install them just in case or ensure pip install is easy.
-if [ ! -f "requirements.txt" ]; then
-    pip freeze > requirements.txt
+if [ ! -f "../requirements.txt" ]; then
+    pip freeze > ../requirements.txt
 fi
-pip install -r requirements.txt > /dev/null 2>&1
+pip install -r ../requirements.txt > /dev/null 2>&1
 
 echo "-> Starting Backend (FastAPI)..."
-uvicorn main:app --port 8000 > backend_log.txt 2>&1 &
+uvicorn index:app --port 8000 > backend_log.txt 2>&1 &
 BACKEND_PID=$!
 cd ..
 
 # 2. Start the Frontend
 echo "-> Checking Frontend..."
-cd frontend
 
 # Install node_modules if they don't exist
 if [ ! -d "node_modules" ]; then
@@ -63,7 +59,6 @@ fi
 echo "-> Starting Frontend (Next.js)..."
 npm run dev > frontend_log.txt 2>&1 &
 FRONTEND_PID=$!
-cd ..
 
 echo ""
 echo "============================================="
