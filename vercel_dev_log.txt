@@ -1,0 +1,6 @@
+> [debug] [2026-03-09T14:10:28.289Z] Found config in file "/Users/gaggenapallysaismaranreddy/Documents/my Finance journey/WEBPAGES/portfolio-risk-analyzer/vercel.json"
+> [debug] [2026-03-09T14:10:28.290Z] Vercel CLI 50.28.0
+> [debug] [2026-03-09T14:10:28.293Z] Agent/TTY/nonInteractive: isAgent=false agentName=none stdin.isTTY=true --non-interactive=false explicitFalse=false => nonInteractive=false
+> [debug] [2026-03-09T14:10:28.294Z] user supplied known subcommand: "dev"
+Error: No existing credentials found. Please run `vercel login` or pass "--token"
+Learn More: https://err.sh/vercel/no-credentials-found

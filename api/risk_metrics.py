@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import scipy.stats as stats
 
 def calculate_daily_returns(prices: pd.DataFrame) -> pd.DataFrame:
     """Calculates daily percentage returns from a price dataframe"""
@@ -100,12 +99,18 @@ def central_limit_theorem_analysis(returns: pd.DataFrame, weights: dict[str, flo
     x = np.linspace(portfolio_returns.min() - 0.05, portfolio_returns.max() + 0.05, 100)
     
     # Fit Normal Distribution
-    mu, std = stats.norm.fit(portfolio_returns)
-    pdf_norm = stats.norm.pdf(x, mu, std)
+    mu = np.mean(portfolio_returns)
+    std = np.std(portfolio_returns, ddof=0)
+    # Handle zero std
+    if std == 0: std = 1e-6
+    pdf_norm = (1 / (std * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mu) / std) ** 2)
     
-    # Fit Cauchy Distribution
-    loc, scale = stats.cauchy.fit(portfolio_returns)
-    pdf_cauchy = stats.cauchy.pdf(x, loc, scale)
+    # Fit Cauchy Distribution (Using Median/IQR for approximation)
+    loc = np.median(portfolio_returns)
+    q75, q25 = np.percentile(portfolio_returns, [75, 25])
+    scale = (q75 - q25) / 2
+    if scale == 0: scale = 1e-6
+    pdf_cauchy = 1 / (np.pi * scale * (1 + ((x - loc) / scale) ** 2))
     
     # Calculate empirical histogram
     hist_counts, hist_bins = np.histogram(portfolio_returns, bins=50, density=True)
