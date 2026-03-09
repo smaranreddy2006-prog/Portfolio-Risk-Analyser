@@ -9,6 +9,7 @@ import {
 } from '@/lib/api';
 import { PlusCircle, Play, Trash2, LineChart, Shield, Zap, AlertCircle } from 'lucide-react';
 import { Card, SectionTitle, Button } from '@/components/ui';
+import TickerSearch from '@/components/TickerSearch';
 
 // High-performance Code Splitting for ultra-fast Vercel TTFB
 const Dashboard = dynamic(() => import('@/components/Dashboard'), { loading: () => <div className="animate-pulse h-96 bg-white/5 rounded-2xl border border-white/10" /> });
@@ -98,7 +99,7 @@ export default function Home() {
 
           <div className="space-y-4 mb-8 mt-6 overflow-x-hidden">
             <div className="hidden md:grid grid-cols-12 gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500 pb-3 border-b border-white/5 px-2">
-              <div className="col-span-4">Asset Ticker</div>
+              <div className="col-span-4">Company / Ticker</div>
               <div className="col-span-3">Investment Amount</div>
               <div className="col-span-3">Avg Price Bought (Opt)</div>
               <div className="col-span-2 text-right">Actions</div>
@@ -109,13 +110,11 @@ export default function Home() {
                 <div key={index} className="flex flex-col md:grid md:grid-cols-12 gap-3 items-start md:items-center group relative bg-white/[0.02] hover:bg-white/[0.04] transition-colors md:bg-transparent p-5 md:p-0 rounded-2xl md:rounded-none border border-white/5 md:border-none">
 
                   <div className="w-full md:col-span-4 relative">
-                    <label className="text-[10px] text-zinc-500 mb-2 font-bold uppercase tracking-wider block md:hidden">Asset Ticker</label>
-                    <input
-                      type="text"
+                    <label className="text-[10px] text-zinc-500 mb-2 font-bold uppercase tracking-wider block md:hidden">Company / Ticker</label>
+                    <TickerSearch
                       value={item.ticker}
-                      onChange={(e) => updateItem(index, 'ticker', e.target.value.toUpperCase())}
-                      placeholder="AAPL, MSFT, RELIANCE.NS..."
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-semibold uppercase shadow-inner"
+                      onChange={(ticker) => updateItem(index, 'ticker', ticker)}
+                      placeholder="Apple, Reliance, AAPL..."
                     />
                   </div>
                   <div className="w-full md:col-span-3 relative">

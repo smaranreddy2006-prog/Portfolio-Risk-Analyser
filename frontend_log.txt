@@ -11,3 +11,9 @@
  GET / 200 in 687ms (compile: 594ms, render: 94ms)
 (node:71845) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
+ GET / 200 in 55ms (compile: 7ms, render: 48ms)
+✓ Compiled in 51ms
+ GET / 200 in 135ms (compile: 55ms, render: 80ms)
+✓ Compiled in 39ms
+✓ Compiled in 301ms
+ GET / 200 in 137ms (compile: 66ms, render: 71ms)

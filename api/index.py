@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import concurrent.futures
 from .models import PortfolioRequest
@@ -6,6 +6,7 @@ from . import data_service
 from . import risk_metrics
 from . import scoring
 from . import simulation
+from . import ticker_search
 
 app = FastAPI(title="Portfolio Risk Analyzer API")
 
@@ -21,6 +22,16 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Portfolio Risk Analyzer API"}
+
+
+@app.get("/api/ticker/search")
+def search_ticker_endpoint(q: str = Query(..., min_length=1, description="Company name or partial ticker")):
+    """
+    Search Yahoo Finance for ticker symbols matching a company name.
+    Completely free — uses Yahoo Finance public search endpoint.
+    """
+    results = ticker_search.search_ticker(q)
+    return {"results": results}
 
 def calculate_weights_and_value(items, data):
     current_prices = data.iloc[-1]
