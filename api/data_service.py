@@ -8,13 +8,25 @@ def make_hashable(*args, **kwargs):
     new_kwargs = {k: tuple(v) if isinstance(v, list) else v for k, v in kwargs.items()}
     return keys.hashkey(*new_args, **new_kwargs)
 
+
+def get_benchmark(tickers: list[str]) -> str:
+    """
+    Select the appropriate market benchmark based on the portfolio tickers.
+    Indian portfolios (.NS / .BO) -> NIFTY 50 (^NSEI)
+    All others                    -> S&P 500  (^GSPC)
+    """
+    is_indian = any(t.endswith(('.NS', '.BO')) for t in tickers)
+    return "^NSEI" if is_indian else "^GSPC"
+
+
 # Cache yfinance responses for 1 hour to heavily reduce Vercel serverless latency
 @cached(cache=TTLCache(maxsize=100, ttl=3600), key=make_hashable)
-def fetch_historical_data(tickers: list[str], period: str = "1y") -> pd.DataFrame:
+def fetch_historical_data(tickers: list[str], period: str = "1y", benchmark: str = "^GSPC") -> pd.DataFrame:
     """
-    Fetches historical adjusted close prices for a list of tickers plus the NIFTY 50 index (^NSEI)
+    Fetches historical adjusted close prices for a list of tickers plus the chosen benchmark.
+    benchmark: '^GSPC' for S&P 500 (US stocks), '^NSEI' for NIFTY 50 (Indian stocks)
     """
-    all_tickers = tickers + ["^NSEI"]
+    all_tickers = tickers + [benchmark]
     
     # Download data
     data = yf.download(all_tickers, period=period, progress=False)
@@ -27,8 +39,8 @@ def fetch_historical_data(tickers: list[str], period: str = "1y") -> pd.DataFram
     else:
         raise ValueError("Could not find Close or Adj Close prices in fetched data")
         
-    # Drop rows where NIFTY 50 data is missing, then forward fill other missing values
-    prices = prices.dropna(subset=['^NSEI'])
+    # Drop rows where benchmark data is missing, then forward fill other missing values
+    prices = prices.dropna(subset=[benchmark])
     prices = prices.ffill()
     
     return prices

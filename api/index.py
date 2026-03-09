@@ -57,10 +57,11 @@ def calculate_weights_and_value(items, data):
 def fetch_portfolio_analysis(request: PortfolioRequest):
     try:
         tickers = [item.ticker for item in request.items]
+        benchmark = data_service.get_benchmark(tickers)
         
         # 1. Fetch Data Concurrently
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_data = executor.submit(data_service.fetch_historical_data, tickers, "2y")
+            future_data = executor.submit(data_service.fetch_historical_data, tickers, "2y", benchmark)
             future_sectors = executor.submit(data_service.fetch_sector_info, tickers)
             
             data = future_data.result()
@@ -69,7 +70,8 @@ def fetch_portfolio_analysis(request: PortfolioRequest):
         # Calculate dynamic weights based on avg_price
         weights, total_current_value, currency = calculate_weights_and_value(request.items, data)
         
-        # Calculate returns
+        # Calculate returns (exclude benchmark column from asset returns)
+        asset_cols = [c for c in data.columns if c != benchmark]
         returns = risk_metrics.calculate_daily_returns(data)
         
         # 2. Key Risk Metrics
@@ -99,7 +101,8 @@ def fetch_portfolio_analysis(request: PortfolioRequest):
             "clt_analysis": clt_data,
             "sectors": sector_allocations,
             "score": score_info,
-            "currency": currency
+            "currency": currency,
+            "benchmark": benchmark
         }
         
     except Exception as e:
@@ -109,9 +112,10 @@ def fetch_portfolio_analysis(request: PortfolioRequest):
 def fetch_portfolio_simulation(request: PortfolioRequest):
     try:
         tickers = [item.ticker for item in request.items]
+        benchmark = data_service.get_benchmark(tickers)
         
         # Fetch data
-        data = data_service.fetch_historical_data(tickers, "2y")
+        data = data_service.fetch_historical_data(tickers, "2y", benchmark)
         returns = risk_metrics.calculate_daily_returns(data)
         
         # Calculate dynamic weights and current value based on avg_price

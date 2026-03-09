@@ -8,6 +8,7 @@ export default function Dashboard({ analysis }: { analysis: any }) {
 
     const { score, beta, risk_decomposition, sectors } = analysis;
     const currency = analysis.currency || 'USD';
+    const benchmark = analysis.benchmark === '^NSEI' ? 'NIFTY 50' : 'S&P 500';
 
     const formatCurrency = (val: number) =>
         new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {
@@ -66,7 +67,7 @@ export default function Dashboard({ analysis }: { analysis: any }) {
                         <div className="text-zinc-400 text-sm mb-1 uppercase tracking-wider font-semibold">Portfolio Beta</div>
                         <div className="text-4xl font-bold text-white mb-2">{beta.portfolio_beta.toFixed(2)}</div>
                         <p className="text-xs text-zinc-500 leading-relaxed mb-4">
-                            Measures volatility against the market (NIFTY 50 = 1.0).
+                            Measures volatility against the market ({benchmark} = 1.0).
                             <span className="text-indigo-400 block mt-1 mb-2">
                                 {beta.portfolio_beta > 1.2 ? 'Highly Aggressive' :
                                     beta.portfolio_beta < 0.8 ? 'Defensive' : 'Market Neutral'}
