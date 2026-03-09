@@ -54,37 +54,37 @@ export default function SimulationDashboard({ simulation }: { simulation: any })
 
                 <div className="bg-white/5 backdrop-blur-md border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)] rounded-xl p-4 flex flex-col justify-between group hover:bg-white/10 transition-colors">
                     <div className="text-zinc-400 text-sm mb-2 flex items-center gap-2">
-                        <TrendingUp size={16} className="text-emerald-500" /> Expected (Median)
+                        <TrendingUp size={16} className="text-emerald-500" /> Expected Value
                     </div>
                     <div>
                         <div className="text-xl md:text-2xl font-bold text-emerald-400">
                             {formatCurrency(summary.expected_value)}
                         </div>
-                        <div className="text-xs text-emerald-500/70 mt-1">50th Percentile</div>
+                        <div className="text-xs text-emerald-500/70 mt-1">Median Outcome (50th Pct)</div>
                     </div>
                 </div>
 
                 <div className="bg-white/5 backdrop-blur-md border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)] rounded-xl p-4 flex flex-col justify-between group hover:bg-white/10 transition-colors">
                     <div className="text-zinc-400 text-sm mb-2 flex items-center gap-1">
-                        <TrendingDown size={16} className="text-amber-500" /> Downside (95% VaR) <InfoTooltip text="Value at Risk. You have a 95% mathematical probability of maintaining at least this value." />
+                        <TrendingDown size={16} className="text-amber-500" /> Floor (95% VaR) <InfoTooltip text="95% Value at Risk floor. In 95 out of 100 scenarios, your portfolio will be worth at least this amount after 1 year." />
                     </div>
                     <div>
                         <div className="text-xl md:text-2xl font-bold text-amber-400">
                             {formatCurrency(summary.value_at_risk_95)}
                         </div>
-                        <div className="text-xs text-amber-500/70 mt-1">5th Percentile</div>
+                        <div className="text-xs text-amber-500/70 mt-1">5th Percentile Floor</div>
                     </div>
                 </div>
 
                 <div className="bg-red-500/5 backdrop-blur-md border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)] rounded-xl p-4 flex flex-col justify-between group hover:bg-red-500/10 transition-colors">
                     <div className="text-zinc-400 text-sm mb-2 flex items-center gap-1">
-                        <AlertOctagon size={16} className="text-red-500" /> Severe (99% VaR) <InfoTooltip text="Extreme tail risk. In a severe 1-in-100 market crash, your portfolio could fall to this localized level." />
+                        <AlertOctagon size={16} className="text-red-500" /> Floor (99% VaR) <InfoTooltip text="Extreme tail risk floor. In a severe 1-in-100 crash scenario, your portfolio could fall to this value." />
                     </div>
                     <div>
                         <div className="text-xl md:text-2xl font-bold text-red-400">
                             {formatCurrency(summary.value_at_risk_99)}
                         </div>
-                        <div className="text-xs text-red-500/70 mt-1">1st Percentile</div>
+                        <div className="text-xs text-red-500/70 mt-1">1st Percentile Floor</div>
                     </div>
                 </div>
             </div>

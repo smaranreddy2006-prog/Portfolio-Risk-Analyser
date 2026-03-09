@@ -18,20 +18,23 @@ def run_monte_carlo(returns: pd.DataFrame, weights: dict[str, float], initial_in
     
     # 1. Generate final values analytically using exact GBM solution for N simulations
     # S_T = S_0 * exp((mu - 0.5 * sigma^2) * T + sigma * sqrt(T) * Z)
-    
     Z_final = np.random.standard_normal(simulations)
     drift_total = (mu - 0.5 * sigma**2) * days
     diffusion_total = sigma * np.sqrt(days) * Z_final
     final_values = initial_investment * np.exp(drift_total + diffusion_total)
     
-    # Calculate key metrics
-    expected_value = np.mean(final_values)
-    lower_bound = np.percentile(final_values, 2.5) # 95% Confidence Interval
-    upper_bound = np.percentile(final_values, 97.5) # 95% Confidence Interval
-    var_95 = initial_investment - np.percentile(final_values, 5.0) # 95% Value at Risk
+    # --- Correct percentile values (all as portfolio values, not loss deltas) ---
+    pct_1  = float(np.percentile(final_values, 1.0))
+    pct_5  = float(np.percentile(final_values, 5.0))
+    pct_10 = float(np.percentile(final_values, 10.0))
+    pct_50 = float(np.percentile(final_values, 50.0))   # Median
+    pct_75 = float(np.percentile(final_values, 75.0))
+    pct_90 = float(np.percentile(final_values, 90.0))
+    
+    # Expected value = median (50th pct) for a log-normal dist; consistent with UI label
+    expected_value = pct_50
     
     # 2. For the frontend visualization, simulate ~50 actual paths over time.
-    # Otherwise, returning 1M paths * 252 days would crash the browser and server memory.
     sample_sims = 50
     dt = 1
     paths = np.zeros((sample_sims, days))
@@ -52,17 +55,21 @@ def run_monte_carlo(returns: pd.DataFrame, weights: dict[str, float], initial_in
     
     return {
         "summary": {
-            "initial_investment": initial_investment,
+            "initial_investment": float(initial_investment),
+            # Expected value = median so it matches 50th percentile in the table
             "expected_value": expected_value,
-            "value_at_risk_95": var_95,
-            "value_at_risk_99": initial_investment - np.percentile(final_values, 1.0),
-            "total_simulations": simulations
+            # VaR stored as portfolio floor values (not loss amounts)
+            "value_at_risk_95": pct_5,   # 5th percentile portfolio value
+            "value_at_risk_99": pct_1,   # 1st percentile portfolio value
+            "total_simulations": simulations,
+            # Additional stats shown on UI
+            "arithmetic_mean": float(np.mean(final_values)),
         },
         "percentiles": {
-            "10": np.percentile(final_values, 10.0),
-            "50": np.percentile(final_values, 50.0),
-            "75": np.percentile(final_values, 75.0),
-            "90": np.percentile(final_values, 90.0)
+            "10":  pct_10,
+            "50":  pct_50,
+            "75":  pct_75,
+            "90":  pct_90,
         },
         "sample_paths": sample_paths,
         "distribution": {
