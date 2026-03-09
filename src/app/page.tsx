@@ -97,7 +97,7 @@ export default function Home() {
             />
           </div>
 
-          <div className="space-y-4 mb-8 mt-6 overflow-x-hidden">
+          <div className="space-y-4 mb-8 mt-6">
             <div className="hidden md:grid grid-cols-12 gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500 pb-3 border-b border-white/5 px-2">
               <div className="col-span-4">Company / Ticker</div>
               <div className="col-span-3">Investment Amount</div>
@@ -109,7 +109,7 @@ export default function Home() {
               {items.map((item, index) => (
                 <div key={index} className="flex flex-col md:grid md:grid-cols-12 gap-3 items-start md:items-center group relative bg-white/[0.02] hover:bg-white/[0.04] transition-colors md:bg-transparent p-5 md:p-0 rounded-2xl md:rounded-none border border-white/5 md:border-none">
 
-                  <div className="w-full md:col-span-4 relative">
+                  <div className="w-full md:col-span-4 relative" style={{ overflow: 'visible' }}>
                     <label className="text-[10px] text-zinc-500 mb-2 font-bold uppercase tracking-wider block md:hidden">Company / Ticker</label>
                     <TickerSearch
                       value={item.ticker}
