@@ -96,7 +96,7 @@ export default function Home() {
             subtitle="Enter ticker symbols and amounts to run the engine."
           />
 
-          <div className="space-y-4 mb-8 mt-6">
+          <div className="space-y-4 mb-8 mt-6 overflow-x-hidden">
             <div className="hidden md:grid grid-cols-12 gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500 pb-3 border-b border-white/5 px-2">
               <div className="col-span-4">Asset Ticker</div>
               <div className="col-span-3">Investment Amount</div>
@@ -178,10 +178,10 @@ export default function Home() {
         {/* Dashboards */}
         {analysis && simulation && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 relative z-10 animate-[fadeIn_0.5s_ease-out]">
-            <div className="flex gap-3 mb-8 bg-black/40 p-1.5 rounded-2xl w-fit backdrop-blur-xl border border-white/10 shadow-2xl">
+            <div className="flex flex-col sm:flex-row gap-3 mb-8 bg-black/40 p-1.5 rounded-2xl w-full sm:w-fit backdrop-blur-xl border border-white/10 shadow-2xl">
               <button
                 onClick={() => setActiveTab('analysis')}
-                className={`px-6 py-2.5 rounded-xl text-sm font-bold tracking-wide flex items-center gap-2 transition-all duration-300 ${activeTab === 'analysis'
+                className={`px-6 py-2.5 w-full sm:w-auto rounded-xl text-sm font-bold tracking-wide flex items-center justify-center gap-2 transition-all duration-300 ${activeTab === 'analysis'
                   ? 'bg-white text-black shadow-lg translate-y-[-2px]'
                   : 'text-zinc-400 hover:text-white hover:bg-white/5'
                   }`}
@@ -190,7 +190,7 @@ export default function Home() {
               </button>
               <button
                 onClick={() => setActiveTab('simulation')}
-                className={`px-6 py-2.5 rounded-xl text-sm font-bold tracking-wide flex items-center gap-2 transition-all duration-300 ${activeTab === 'simulation'
+                className={`px-6 py-2.5 w-full sm:w-auto rounded-xl text-sm font-bold tracking-wide flex items-center justify-center gap-2 transition-all duration-300 ${activeTab === 'simulation'
                   ? 'bg-white text-black shadow-lg translate-y-[-2px]'
                   : 'text-zinc-400 hover:text-white hover:bg-white/5'
                   }`}

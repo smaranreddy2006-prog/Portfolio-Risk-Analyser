@@ -51,11 +51,11 @@ export default function Dashboard({ analysis }: { analysis: any }) {
                 </Card>
 
                 {/* Beta & Volatility */}
-                <Card className="md:col-span-2 grid grid-cols-2 gap-8 items-center bg-zinc-900/50">
+                <Card className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-8 items-center bg-zinc-900/50">
                     <div>
                         <div className="text-zinc-400 text-sm mb-1 uppercase tracking-wider font-semibold">Portfolio Beta</div>
                         <div className="text-4xl font-bold text-white mb-2">{beta.portfolio_beta.toFixed(2)}</div>
-                        <p className="text-xs text-zinc-500 leading-relaxed">
+                        <p className="text-xs text-zinc-500 leading-relaxed mb-4">
                             Measures volatility against the market (NIFTY 50 = 1.0).
                             <span className="text-indigo-400 block mt-1 mb-2">
                                 {beta.portfolio_beta > 1.2 ? 'Highly Aggressive' :
@@ -72,10 +72,10 @@ export default function Dashboard({ analysis }: { analysis: any }) {
                         </div>
                     </div>
 
-                    <div className="border-l border-white/10 pl-8">
+                    <div className="border-t sm:border-t-0 sm:border-l border-white/10 pt-8 sm:pt-0 sm:pl-8">
                         <div className="text-zinc-400 text-sm mb-1 uppercase tracking-wider font-semibold">Annual Volatility</div>
                         <div className="text-4xl font-bold text-white mb-2">{(risk_decomposition.portfolio.total_risk * 100).toFixed(1)}%</div>
-                        <p className="text-xs text-zinc-500 leading-relaxed mb-2">
+                        <p className="text-xs text-zinc-500 leading-relaxed mb-4">
                             Standard deviation of daily returns annualized.
                             <span className="block mt-1">
                                 Market: {(risk_decomposition.portfolio.market_risk * 100).toFixed(1)}% |

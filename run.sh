@@ -26,26 +26,24 @@ trap cleanup SIGINT SIGTERM
 
 # 1. Start the Backend
 echo "-> Checking Backend..."
-cd api
 
 # Create venv if it doesn't exist
-if [ ! -d "venv" ]; then
+if [ ! -d "api/venv" ]; then
     echo "Creating python virtual environment..."
-    python3 -m venv venv
+    python3 -m venv api/venv
 fi
 
 # Activate venv and install dependencies if needed
-source venv/bin/activate
+source api/venv/bin/activate
 
-if [ ! -f "../requirements.txt" ]; then
-    pip freeze > ../requirements.txt
+if [ ! -f "requirements.txt" ]; then
+    pip freeze > requirements.txt
 fi
-pip install -r ../requirements.txt > /dev/null 2>&1
+pip install -r requirements.txt > /dev/null 2>&1
 
 echo "-> Starting Backend (FastAPI)..."
-uvicorn index:app --port 8000 > backend_log.txt 2>&1 &
+uvicorn api.index:app --port 8000 > api/backend_log.txt 2>&1 &
 BACKEND_PID=$!
-cd ..
 
 # 2. Start the Frontend
 echo "-> Checking Frontend..."

@@ -27,7 +27,7 @@ export default function SimulationDashboard({ simulation }: { simulation: any })
     return (
         <div className="space-y-6 mt-6 animate-in slide-in-from-bottom-8 duration-700 delay-150">
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col justify-between">
                     <div className="text-zinc-400 text-sm mb-2 flex items-center gap-2">
                         <Target size={16} className="text-zinc-500" /> Current Value
