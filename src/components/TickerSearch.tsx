@@ -115,7 +115,7 @@ export default function TickerSearch({ value, onChange, placeholder = 'Apple, Re
 
             {/* Dropdown */}
             {open && suggestions.length > 0 && (
-                <div className="absolute z-50 top-full mt-1.5 w-full bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 duration-150">
+                <div className="absolute z-50 bottom-full mb-1.5 md:bottom-full md:mb-1.5 w-full bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-2 duration-150">
                     <div className="px-3 py-2 border-b border-white/5 flex items-center gap-1.5">
                         <TrendingUp size={12} className="text-indigo-400" />
                         <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Suggestions</span>
