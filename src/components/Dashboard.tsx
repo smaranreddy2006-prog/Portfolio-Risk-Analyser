@@ -7,6 +7,14 @@ export default function Dashboard({ analysis }: { analysis: any }) {
     if (!analysis) return null;
 
     const { score, beta, risk_decomposition, sectors } = analysis;
+    const currency = analysis.currency || 'USD';
+
+    const formatCurrency = (val: number) =>
+        new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {
+            style: 'currency',
+            currency: currency,
+            maximumFractionDigits: 0
+        }).format(val);
 
     // Format sector data for pie chart
     const sectorData = Object.entries(sectors.allocations).map(([name, value]) => ({
@@ -30,8 +38,10 @@ export default function Dashboard({ analysis }: { analysis: any }) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 {/* Risk Score Widget */}
-                <Card className="flex flex-col items-center justify-center text-center p-8 bg-gradient-to-br from-zinc-900 to-black">
-                    <SectionTitle title="Portfolio Score" subtitle="Holistic 0-100 Rating" />
+                <Card className="flex flex-col items-center justify-center text-center p-6 sm:p-8 bg-gradient-to-br from-zinc-900 to-black">
+                    <div className="text-center">
+                        <SectionTitle title="Portfolio Score" subtitle="Holistic 0-100 Rating" />
+                    </div>
                     <div className={`text-6xl font-black mb-2 ${getScoreColor(score.score)}`}>
                         {score.score.toFixed(0)}
                     </div>
@@ -98,9 +108,9 @@ export default function Dashboard({ analysis }: { analysis: any }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 {/* Sector Allocation Chart */}
-                <Card>
+                <Card className="p-4 sm:p-6">
                     <SectionTitle title="Sector Exposure" />
-                    <div className="h-[300px]">
+                    <div className="h-[250px] sm:h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie

@@ -6,26 +6,41 @@ import { InfoTooltip } from './ui';
 export default function SimulationDashboard({ simulation }: { simulation: any }) {
     if (!simulation) return null;
 
-    const { summary, percentiles, paths } = simulation;
+    const { summary, percentiles, sample_paths } = simulation;
+    const currency = simulation.currency || 'USD';
+
+    const formatCurrency = (val: number) =>
+        new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {
+            style: 'currency',
+            currency: currency,
+            maximumFractionDigits: 0
+        }).format(val);
+
+    if (!sample_paths || sample_paths.length === 0) return null;
 
     // Transform sample paths into recharts format
     // Recharts expects an array of objects: { day: 1, path0: 100, path1: 105, ... }
     const chartData = [];
-    const days = paths[0].length;
+    const days = sample_paths[0].length;
 
     for (let d = 0; d < days; d++) {
         const dataPoint: any = { day: d };
-        paths.forEach((path: number[], index: number) => {
+        sample_paths.forEach((path: number[], index: number) => {
             dataPoint[`path${index}`] = path[d];
         });
         chartData.push(dataPoint);
     }
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
 
     return (
         <div className="space-y-6 mt-6 animate-in slide-in-from-bottom-8 duration-700 delay-150">
+
+            {/* Currency mode badge */}
+            <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase border ${currency === 'INR' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : 'bg-blue-500/10 border-blue-500/30 text-blue-400'}`}>
+                    {currency === 'INR' ? '🇮🇳' : '🇺🇸'} {currency} Mode
+                </span>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col justify-between">
@@ -116,7 +131,7 @@ export default function SimulationDashboard({ simulation }: { simulation: any })
                 </div>
                 <SectionTitle title="Monte Carlo Paths" subtitle="Geometric Brownian Motion (252 Trading Days)" />
 
-                <div className="h-96 w-full mt-6">
+                <div className="h-64 sm:h-96 w-full mt-6">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
@@ -133,14 +148,14 @@ export default function SimulationDashboard({ simulation }: { simulation: any })
                                 fontSize={12}
                                 tickLine={false}
                                 axisLine={false}
-                                tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`}
+                                tickFormatter={(val) => `${currency === 'INR' ? '₹' : '$'}${(val / 1000).toFixed(0)}k`}
                             />
                             <RechartsTooltip
                                 contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '8px', color: '#fff' }}
                                 formatter={(value: any) => [formatCurrency(Number(value) || 0), 'Value']}
                                 labelFormatter={(label: any) => `Trading Day ${label}`}
                             />
-                            {paths.map((_: any, index: number) => (
+                            {sample_paths.map((_: any, index: number) => (
                                 <Line
                                     key={index}
                                     type="monotone"

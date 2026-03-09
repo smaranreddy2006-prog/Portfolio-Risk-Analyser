@@ -39,16 +39,16 @@ export const Button = ({ children, onClick, disabled, className = '', variant = 
 };
 
 export const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] rounded-2xl p-6 ${className}`}>
+    <div className={`bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] rounded-2xl p-4 sm:p-6 ${className}`}>
         {children}
     </div>
 );
 
 export function SectionTitle({ title, subtitle }: { title: string; subtitle?: string }) {
     return (
-        <div className="mb-6">
-            <h2 className="text-2xl font-bold tracking-tight text-white mb-1">{title}</h2>
-            {subtitle && <p className="text-zinc-400 text-sm">{subtitle}</p>}
+        <div className="mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-1">{title}</h2>
+            {subtitle && <p className="text-zinc-400 text-xs sm:text-sm">{subtitle}</p>}
         </div>
     );
 }

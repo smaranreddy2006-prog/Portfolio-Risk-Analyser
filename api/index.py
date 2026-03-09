@@ -25,6 +25,9 @@ def read_root():
 def calculate_weights_and_value(items, data):
     current_prices = data.iloc[-1]
     current_values = {}
+    is_indian = any(item.ticker.endswith(('.NS', '.BO')) for item in items)
+    currency = "INR" if is_indian else "USD"
+    
     for item in items:
         if item.avg_price is not None and item.avg_price > 0:
             shares = item.amount / item.avg_price
@@ -37,7 +40,7 @@ def calculate_weights_and_value(items, data):
         raise ValueError("Total current portfolio value must be positive")
         
     weights = {ticker: float(value / total_current_value) for ticker, value in current_values.items()}
-    return weights, total_current_value
+    return weights, total_current_value, currency
 
 @app.post("/api/portfolio/analysis")
 def fetch_portfolio_analysis(request: PortfolioRequest):
@@ -53,7 +56,7 @@ def fetch_portfolio_analysis(request: PortfolioRequest):
             sectors = future_sectors.result()
         
         # Calculate dynamic weights based on avg_price
-        weights, total_current_value = calculate_weights_and_value(request.items, data)
+        weights, total_current_value, currency = calculate_weights_and_value(request.items, data)
         
         # Calculate returns
         returns = risk_metrics.calculate_daily_returns(data)
@@ -84,7 +87,8 @@ def fetch_portfolio_analysis(request: PortfolioRequest):
             "risk_decomposition": risk_decomp,
             "clt_analysis": clt_data,
             "sectors": sector_allocations,
-            "score": score_info
+            "score": score_info,
+            "currency": currency
         }
         
     except Exception as e:
@@ -100,7 +104,7 @@ def fetch_portfolio_simulation(request: PortfolioRequest):
         returns = risk_metrics.calculate_daily_returns(data)
         
         # Calculate dynamic weights and current value based on avg_price
-        weights, total_current_value = calculate_weights_and_value(request.items, data)
+        weights, total_current_value, currency = calculate_weights_and_value(request.items, data)
         
         # Run Simulation
         sim_data = simulation.run_monte_carlo(
@@ -113,7 +117,8 @@ def fetch_portfolio_simulation(request: PortfolioRequest):
         
         return {
             "status": "success",
-            "simulation": sim_data
+            "simulation": sim_data,
+            "currency": currency
         }
         
     except Exception as e:

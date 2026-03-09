@@ -22,7 +22,6 @@ export default function Home() {
   const [simulation, setSimulation] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'analysis' | 'simulation'>('analysis');
 
   const addItem = () => {
     setItems([...items, { ticker: '', amount: 0, avg_price: undefined }]);
@@ -58,8 +57,7 @@ export default function Home() {
       ]);
 
       setAnalysis(analysisData);
-      setSimulation(simRes.simulation);
-      setActiveTab('analysis');
+      setSimulation({ ...simRes.simulation, currency: simRes.currency });
     } catch (err: any) {
       setError(err.message || 'Failed to analyze portfolio');
     } finally {
@@ -77,24 +75,26 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
 
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 pb-8 border-b border-white/10">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-semibold tracking-widest text-indigo-400 mb-4 uppercase">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 md:mb-12 gap-6 pb-6 md:pb-8 border-b border-white/10 text-center md:text-left">
+          <div className="flex flex-col items-center md:items-start">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] sm:text-xs font-semibold tracking-widest text-indigo-400 mb-4 uppercase">
               <Zap size={14} className="animate-pulse" /> Finance Intelligence
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-500">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-500">
               Risk Engine <span className="text-transparent border-none text-white/20 font-light">|</span> AI
             </h1>
-            <p className="text-zinc-400 text-lg md:text-xl font-light max-w-2xl">
+            <p className="text-zinc-400 text-base sm:text-lg md:text-xl font-light max-w-2xl px-4 md:px-0">
               Deep-quant portfolio mathematics, interactive physics-based Monte Carlo simulations, and real-time stress testing.
             </p>
           </div>
         </div>
-        <Card className="mb-10 lg:w-[80%] xl:w-[70%] z-20 relative">
-          <SectionTitle
-            title="Portfolio Builder"
-            subtitle="Enter ticker symbols and amounts to run the engine."
-          />
+        <Card className="mb-10 lg:w-[80%] xl:w-[70%] z-20 relative mx-auto">
+          <div className="text-center mb-6">
+            <SectionTitle
+              title="Portfolio Builder"
+              subtitle="Enter ticker symbols and amounts to run the engine."
+            />
+          </div>
 
           <div className="space-y-4 mb-8 mt-6 overflow-x-hidden">
             <div className="hidden md:grid grid-cols-12 gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500 pb-3 border-b border-white/5 px-2">
@@ -153,11 +153,11 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10 justify-center">
             <Button variant="secondary" onClick={addItem} className="flex-1 sm:flex-none">
               <PlusCircle size={18} /> Add Asset
             </Button>
-            <Button onClick={analyzePortfolio} disabled={loading} className="flex-1 sm:flex-none sm:ml-auto">
+            <Button onClick={analyzePortfolio} disabled={loading} className="flex-1 sm:flex-none">
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
@@ -177,34 +177,21 @@ export default function Home() {
 
         {/* Dashboards */}
         {analysis && simulation && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 relative z-10 animate-[fadeIn_0.5s_ease-out]">
-            <div className="flex flex-col sm:flex-row gap-3 mb-8 bg-black/40 p-1.5 rounded-2xl w-full sm:w-fit backdrop-blur-xl border border-white/10 shadow-2xl">
-              <button
-                onClick={() => setActiveTab('analysis')}
-                className={`px-6 py-2.5 w-full sm:w-auto rounded-xl text-sm font-bold tracking-wide flex items-center justify-center gap-2 transition-all duration-300 ${activeTab === 'analysis'
-                  ? 'bg-white text-black shadow-lg translate-y-[-2px]'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
-                  }`}
-              >
-                <Shield size={16} /> Risk Analysis
-              </button>
-              <button
-                onClick={() => setActiveTab('simulation')}
-                className={`px-6 py-2.5 w-full sm:w-auto rounded-xl text-sm font-bold tracking-wide flex items-center justify-center gap-2 transition-all duration-300 ${activeTab === 'simulation'
-                  ? 'bg-white text-black shadow-lg translate-y-[-2px]'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
-                  }`}
-              >
-                <LineChart size={16} /> Physics Monte Carlo
-              </button>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 relative z-10 space-y-16 animate-[fadeIn_0.5s_ease-out]">
+            <div className="animate-[slideUp_0.4s_ease-out]">
+              <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3 mb-6">
+                <Shield className="text-indigo-400" size={28} />
+                <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400 text-center sm:text-left">Risk Analysis</h2>
+              </div>
+              <Dashboard analysis={analysis} />
             </div>
 
-            <div className="transition-all duration-500 relative">
-              {activeTab === 'analysis' ? (
-                <div className="animate-[slideUp_0.4s_ease-out]"><Dashboard analysis={analysis} /></div>
-              ) : (
-                <div className="animate-[slideUp_0.4s_ease-out]"><SimulationDashboard simulation={simulation} /></div>
-              )}
+            <div className="animate-[slideUp_0.6s_ease-out]">
+              <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3 mb-6 pt-8 border-t border-white/10">
+                <LineChart className="text-emerald-400" size={28} />
+                <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400 text-center sm:text-left">Physics Monte Carlo</h2>
+              </div>
+              <SimulationDashboard simulation={simulation} />
             </div>
           </div>
         )}

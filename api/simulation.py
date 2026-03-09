@@ -51,10 +51,19 @@ def run_monte_carlo(returns: pd.DataFrame, weights: dict[str, float], initial_in
     hist, bins = np.histogram(final_values, bins=50)
     
     return {
-        "expected_value": expected_value,
-        "lower_bound": lower_bound,
-        "upper_bound": upper_bound,
-        "var_95": var_95,
+        "summary": {
+            "initial_investment": initial_investment,
+            "expected_value": expected_value,
+            "value_at_risk_95": var_95,
+            "value_at_risk_99": initial_investment - np.percentile(final_values, 1.0),
+            "total_simulations": simulations
+        },
+        "percentiles": {
+            "10": np.percentile(final_values, 10.0),
+            "50": np.percentile(final_values, 50.0),
+            "75": np.percentile(final_values, 75.0),
+            "90": np.percentile(final_values, 90.0)
+        },
         "sample_paths": sample_paths,
         "distribution": {
             "counts": hist.tolist(),

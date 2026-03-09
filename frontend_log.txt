@@ -4,13 +4,10 @@
 
 ▲ Next.js 16.1.6 (Turbopack)
 - Local:         http://localhost:3000
-- Network:       http://10.111.200.254:3000
+- Network:       http://10.135.0.254:3000
 
 ✓ Starting...
-✓ Ready in 1110ms
- GET / 200 in 879ms (compile: 746ms, render: 132ms)
- GET / 200 in 226ms (compile: 11ms, render: 215ms)
- GET / 200 in 61ms (compile: 9ms, render: 52ms)
-✓ Compiled in 202ms
-✓ Compiled in 66ms
-✓ Compiled in 53ms
+✓ Ready in 944ms
+ GET / 200 in 687ms (compile: 594ms, render: 94ms)
+(node:71845) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
