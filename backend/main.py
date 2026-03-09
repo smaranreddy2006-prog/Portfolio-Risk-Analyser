@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import concurrent.futures
 from models import PortfolioRequest
 import data_service
 import risk_metrics
@@ -38,14 +39,18 @@ def calculate_weights_and_value(items, data):
     weights = {ticker: float(value / total_current_value) for ticker, value in current_values.items()}
     return weights, total_current_value
 
-@app.post("/portfolio/analysis")
+@app.post("/api/portfolio/analysis")
 def fetch_portfolio_analysis(request: PortfolioRequest):
     try:
         tickers = [item.ticker for item in request.items]
         
-        # 1. Fetch Data
-        data = data_service.fetch_historical_data(tickers, period="2y")
-        sectors = data_service.fetch_sector_info(tickers)
+        # 1. Fetch Data Concurrently
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_data = executor.submit(data_service.fetch_historical_data, tickers, "2y")
+            future_sectors = executor.submit(data_service.fetch_sector_info, tickers)
+            
+            data = future_data.result()
+            sectors = future_sectors.result()
         
         # Calculate dynamic weights based on avg_price
         weights, total_current_value = calculate_weights_and_value(request.items, data)
@@ -85,13 +90,13 @@ def fetch_portfolio_analysis(request: PortfolioRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/portfolio/simulation")
+@app.post("/api/portfolio/simulation")
 def fetch_portfolio_simulation(request: PortfolioRequest):
     try:
         tickers = [item.ticker for item in request.items]
         
         # Fetch data
-        data = data_service.fetch_historical_data(tickers, period="2y")
+        data = data_service.fetch_historical_data(tickers, "2y")
         returns = risk_metrics.calculate_daily_returns(data)
         
         # Calculate dynamic weights and current value based on avg_price

@@ -1,7 +1,15 @@
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
+from cachetools import cached, TTLCache, keys
 
+def make_hashable(*args, **kwargs):
+    new_args = tuple(tuple(arg) if isinstance(arg, list) else arg for arg in args)
+    new_kwargs = {k: tuple(v) if isinstance(v, list) else v for k, v in kwargs.items()}
+    return keys.hashkey(*new_args, **new_kwargs)
+
+# Cache yfinance responses for 1 hour to heavily reduce Vercel serverless latency
+@cached(cache=TTLCache(maxsize=100, ttl=3600), key=make_hashable)
 def fetch_historical_data(tickers: list[str], period: str = "1y") -> pd.DataFrame:
     """
     Fetches historical adjusted close prices for a list of tickers plus the NIFTY 50 index (^NSEI)
@@ -25,6 +33,7 @@ def fetch_historical_data(tickers: list[str], period: str = "1y") -> pd.DataFram
     
     return prices
 
+@cached(cache=TTLCache(maxsize=100, ttl=3600), key=make_hashable)
 def fetch_sector_info(tickers: list[str]) -> dict:
     """
     Fetches the sector for each ticker using yfinance.
