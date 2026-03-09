@@ -1,11 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import concurrent.futures
-from models import PortfolioRequest
-import data_service
-import risk_metrics
-import scoring
-import simulation
+from .models import PortfolioRequest
+from . import data_service
+from . import risk_metrics
+from . import scoring
+from . import simulation
 
 app = FastAPI(title="Portfolio Risk Analyzer API")
 
