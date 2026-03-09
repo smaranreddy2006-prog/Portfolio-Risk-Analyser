@@ -1,10 +1,12 @@
 import { Card, SectionTitle } from '@/components/ui';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { InfoTooltip } from './ui';
+import { ShieldCheck, AlertTriangle, Activity } from 'lucide-react';
 
-export function Dashboard({ results }: { results: any }) {
-    if (!results) return null;
+export default function Dashboard({ analysis }: { analysis: any }) {
+    if (!analysis) return null;
 
-    const { score, beta, risk_decomposition, sectors } = results;
+    const { score, beta, risk_decomposition, sectors } = analysis;
 
     // Format sector data for pie chart
     const sectorData = Object.entries(sectors.allocations).map(([name, value]) => ({
@@ -36,10 +38,15 @@ export function Dashboard({ results }: { results: any }) {
                     <div className="text-sm font-medium px-4 py-1.5 rounded-full bg-white/5 border border-white/10 uppercase tracking-widest text-zinc-300 mb-4">
                         {score.risk_level}
                     </div>
-                    <div className="text-xs text-zinc-500 bg-black/20 p-3 rounded-lg text-left border border-white/5 w-full">
-                        <span className="text-indigo-400 font-semibold block mb-1">What is this?</span>
-                        A holistic 0-100 rating combining Beta, Volatility, and Sector Diversification.
-                        A score &gt; 70 indicates a historically optimal balance of risk vs reward.
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex items-center gap-4 group hover:bg-white/10 transition-colors">
+                        <div className="p-3 bg-indigo-500/20 text-indigo-400 rounded-lg group-hover:scale-110 transition-transform">
+                            <ShieldCheck size={24} />
+                        </div>
+                        <div className="text-xs text-zinc-500 text-left w-full">
+                            <span className="text-indigo-400 font-semibold block mb-1">What is this?</span>
+                            A holistic 0-100 rating combining Beta, Volatility, and Sector Diversification.
+                            A score &gt; 70 indicates a historically optimal balance of risk vs reward.
+                        </div>
                     </div>
                 </Card>
 
@@ -55,8 +62,13 @@ export function Dashboard({ results }: { results: any }) {
                                     beta.portfolio_beta < 0.8 ? 'Defensive' : 'Market Neutral'}
                             </span>
                         </p>
-                        <div className="text-[10px] text-zinc-400 bg-black/20 p-2 rounded border border-white/5">
-                            <span className="text-indigo-400 font-semibold">Optimal Range:</span> 0.8 - 1.2 for most investors. Higher values (&gt; 1.2) mean outsized gains/losses. Lower values (&lt; 0.8) offer stability but lower expected returns.
+                        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex items-center gap-4 group hover:bg-white/10 transition-colors">
+                            <div className="p-3 bg-indigo-500/20 text-indigo-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <ShieldCheck size={24} />
+                            </div>
+                            <div className="text-[10px] text-zinc-400">
+                                <span className="text-indigo-400 font-semibold">Optimal Range:</span> 0.8 - 1.2 for most investors. Higher values (&gt; 1.2) mean outsized gains/losses. Lower values (&lt; 0.8) offer stability but lower expected returns.
+                            </div>
                         </div>
                     </div>
 
@@ -70,8 +82,13 @@ export function Dashboard({ results }: { results: any }) {
                                 Idio: {(risk_decomposition.portfolio.idiosyncratic_risk * 100).toFixed(1)}%
                             </span>
                         </p>
-                        <div className="text-[10px] text-zinc-400 bg-black/20 p-2 rounded border border-white/5">
-                            <span className="text-indigo-400 font-semibold">Optimal Range:</span> 10% - 15% for balanced portfolios. Above 20% indicates high short-term price swings. (Market risk = systematic; Idio = asset-specific).
+                        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex items-center gap-4 group hover:bg-white/10 transition-colors">
+                            <div className="p-3 bg-amber-500/20 text-amber-400 rounded-lg group-hover:scale-110 transition-transform">
+                                <AlertTriangle size={24} />
+                            </div>
+                            <div className="text-[10px] text-zinc-400">
+                                <span className="text-indigo-400 font-semibold">Optimal Range:</span> 10% - 15% for balanced portfolios. Above 20% indicates high short-term price swings. (Market risk = systematic; Idio = asset-specific).
+                            </div>
                         </div>
                     </div>
                 </Card>
@@ -114,7 +131,7 @@ export function Dashboard({ results }: { results: any }) {
                 <Card>
                     <SectionTitle title="Sector Insights" subtitle="Based on broad market benchmarks" />
                     <div className="space-y-6 mt-4">
-                        <div>
+                        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 group hover:bg-white/10 transition-colors">
                             <h4 className="text-xs uppercase tracking-wider text-rose-400 font-semibold mb-3 flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-rose-500"></span> Overexposed (&gt;40%)
                             </h4>
@@ -129,7 +146,7 @@ export function Dashboard({ results }: { results: any }) {
                             </div>
                         </div>
 
-                        <div className="pt-4 border-t border-white/5">
+                        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 group hover:bg-white/10 transition-colors">
                             <h4 className="text-xs uppercase tracking-wider text-emerald-400 font-semibold mb-3 flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Missing Key Sectors
                             </h4>

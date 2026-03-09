@@ -1,47 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Card, SectionTitle } from '@/components/ui';
-import { Plus, Trash2, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
-import { fetchPortfolioAnalysis, fetchPortfolioSimulation, PortfolioItem } from '@/lib/api';
+import {
+  fetchPortfolioAnalysis,
+  fetchPortfolioSimulation,
+  PortfolioItem
+} from '@/lib/api';
+import { PlusCircle, Play, Trash2, LineChart, Shield, Zap, AlertCircle } from 'lucide-react';
+import { Card, SectionTitle, Button } from '@/components/ui';
 
-// Dynamically import heavy charting components to reduce initial bundle size on Vercel
-const Dashboard = dynamic(() => import('@/components/Dashboard').then(mod => mod.Dashboard), { ssr: false });
-const SimulationDashboard = dynamic(() => import('@/components/SimulationDashboard').then(mod => mod.SimulationDashboard), { ssr: false });
+// High-performance Code Splitting for ultra-fast Vercel TTFB
+const Dashboard = dynamic(() => import('@/components/Dashboard'), { loading: () => <div className="animate-pulse h-96 bg-white/5 rounded-2xl border border-white/10" /> });
+const SimulationDashboard = dynamic(() => import('@/components/SimulationDashboard'), { loading: () => <div className="animate-pulse h-96 bg-white/5 rounded-2xl border border-white/10" /> });
 
 export default function Home() {
   const [items, setItems] = useState<PortfolioItem[]>([
-    { ticker: 'AAPL', amount: 5000, avg_price: undefined },
-    { ticker: 'MSFT', amount: 5000, avg_price: undefined }
+    { ticker: '', amount: 0, avg_price: undefined }
   ]);
-
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [simulation, setSimulation] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<any | null>(null);
-  const [simulationResults, setSimulationResults] = useState<any | null>(null);
+  const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'analysis' | 'simulation'>('analysis');
 
   const addItem = () => {
-    setItems([...items, { ticker: '', amount: 1000, avg_price: undefined }]);
-  };
-
-  const updateItem = (index: number, field: keyof PortfolioItem, value: string | number) => {
-    const newItems = [...items];
-    newItems[index] = { ...newItems[index], [field]: value };
-    setItems(newItems);
+    setItems([...items, { ticker: '', amount: 0, avg_price: undefined }]);
   };
 
   const removeItem = (index: number) => {
-    if (items.length <= 1) return;
+    setItems(items.filter((_, i) => i !== index));
+  };
+
+  const updateItem = (index: number, field: keyof PortfolioItem, value: any) => {
     const newItems = [...items];
-    newItems.splice(index, 1);
+    newItems[index] = { ...newItems[index], [field]: value };
     setItems(newItems);
   };
 
   const analyzePortfolio = async () => {
     try {
       setLoading(true);
-      setError(null);
+      setError('');
+      setAnalysis(null);
+      setSimulation(null);
 
       // Basic validation
       const validItems = items.filter(i => i.ticker.trim() !== '' && i.amount > 0);
@@ -50,138 +52,163 @@ export default function Home() {
       }
 
       // Execute both analysis and simulation requests concurrently
-      const [analysisData, simulationData] = await Promise.all([
+      const [analysisData, simRes] = await Promise.all([
         fetchPortfolioAnalysis(validItems),
         fetchPortfolioSimulation(validItems)
       ]);
 
-      setResults(analysisData);
-      setSimulationResults(simulationData);
+      setAnalysis(analysisData);
+      setSimulation(simRes.simulation);
+      setActiveTab('analysis');
     } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || "An error occurred analyzing the portfolio.");
+      setError(err.message || 'Failed to analyze portfolio');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
+    <main className="min-h-screen relative bg-[#0a0a0a] text-zinc-100 font-sans selection:bg-indigo-500/30 overflow-hidden">
+      {/* Animated Glowing Ambient Blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/20 blur-[120px] mix-blend-screen pointer-events-none animate-[pulse_8s_ease-in-out_infinite]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-600/10 blur-[120px] mix-blend-screen pointer-events-none animate-[pulse_12s_ease-in-out_infinite]" />
+      <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-purple-600/15 blur-[100px] mix-blend-screen pointer-events-none animate-[pulse_10s_ease-in-out_infinite_reverse]" />
 
-      <div className="text-center space-y-4 mb-12">
-        <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-          Quantify Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Risk Exposure</span>
-        </h2>
-        <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
-          Input your current investments to generate a deep statistical analysis of your portfolio's beta, tail risk, and sector exposure.
-        </p>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
 
-      <Card>
-        <SectionTitle
-          title="Portfolio Builder"
-          subtitle="Add your stocks, ETFs, or mutual funds to begin analysis."
-        />
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 pb-8 border-b border-white/10">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-semibold tracking-widest text-indigo-400 mb-4 uppercase">
+              <Zap size={14} className="animate-pulse" /> Finance Intelligence
+            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-500">
+              Risk Engine <span className="text-transparent border-none text-white/20 font-light">|</span> AI
+            </h1>
+            <p className="text-zinc-400 text-lg md:text-xl font-light max-w-2xl">
+              Deep-quant portfolio mathematics, interactive physics-based Monte Carlo simulations, and real-time stress testing.
+            </p>
+          </div>
+        </div>
+        <Card className="mb-10 lg:w-[80%] xl:w-[70%] z-20 relative">
+          <SectionTitle
+            title="Portfolio Builder"
+            subtitle="Enter ticker symbols and amounts to run the engine."
+          />
 
-        <div className="space-y-4 mb-6">
-          <div className="hidden md:grid grid-cols-12 gap-3 text-sm font-medium text-zinc-400 pb-2 border-b border-white/5 px-2">
-            <div className="col-span-4">Asset Ticker</div>
-            <div className="col-span-3">Investment Amount</div>
-            <div className="col-span-3">Avg Price Bought (Opt)</div>
-            <div className="col-span-2 text-right">Actions</div>
+          <div className="space-y-4 mb-8 mt-6">
+            <div className="hidden md:grid grid-cols-12 gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500 pb-3 border-b border-white/5 px-2">
+              <div className="col-span-4">Asset Ticker</div>
+              <div className="col-span-3">Investment Amount</div>
+              <div className="col-span-3">Avg Price Bought (Opt)</div>
+              <div className="col-span-2 text-right">Actions</div>
+            </div>
+
+            <div className="space-y-3">
+              {items.map((item, index) => (
+                <div key={index} className="flex flex-col md:grid md:grid-cols-12 gap-3 items-start md:items-center group relative bg-white/[0.02] hover:bg-white/[0.04] transition-colors md:bg-transparent p-5 md:p-0 rounded-2xl md:rounded-none border border-white/5 md:border-none">
+
+                  <div className="w-full md:col-span-4 relative">
+                    <label className="text-[10px] text-zinc-500 mb-2 font-bold uppercase tracking-wider block md:hidden">Asset Ticker</label>
+                    <input
+                      type="text"
+                      value={item.ticker}
+                      onChange={(e) => updateItem(index, 'ticker', e.target.value.toUpperCase())}
+                      placeholder="AAPL, MSFT, RELIANCE.NS..."
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-semibold uppercase shadow-inner"
+                    />
+                  </div>
+                  <div className="w-full md:col-span-3 relative">
+                    <label className="text-[10px] text-zinc-500 mb-2 font-bold uppercase tracking-wider block md:hidden">Investment Amount</label>
+                    <input
+                      type="number"
+                      value={item.amount || ''}
+                      onChange={(e) => updateItem(index, 'amount', parseFloat(e.target.value))}
+                      placeholder="1000"
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-mono font-medium shadow-inner"
+                    />
+                  </div>
+                  <div className="w-full md:col-span-3 relative">
+                    <label className="text-[10px] text-zinc-500 mb-2 font-bold uppercase tracking-wider block md:hidden">Avg Price Bought (Optional)</label>
+                    <input
+                      type="number"
+                      value={item.avg_price || ''}
+                      onChange={(e) => updateItem(index, 'avg_price', parseFloat(e.target.value))}
+                      placeholder="Optional"
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-mono font-medium shadow-inner"
+                    />
+                  </div>
+                  <div className="w-full md:col-span-2 flex justify-end mt-3 md:mt-0 pt-4 md:pt-0 border-t border-white/5 md:border-none">
+                    <button
+                      onClick={() => removeItem(index)}
+                      disabled={items.length <= 1}
+                      className="p-3 w-full md:w-auto flex items-center justify-center gap-2 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-600"
+                    >
+                      <Trash2 size={18} />
+                      <span className="text-sm font-semibold block md:hidden">Remove Asset</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {items.map((item, index) => (
-            <div key={index} className="flex flex-col md:grid md:grid-cols-12 gap-3 items-start md:items-center group relative bg-white/5 md:bg-transparent p-4 md:p-0 rounded-xl md:rounded-none border border-white/5 md:border-none">
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
+            <Button variant="secondary" onClick={addItem} className="flex-1 sm:flex-none">
+              <PlusCircle size={18} /> Add Asset
+            </Button>
+            <Button onClick={analyzePortfolio} disabled={loading} className="flex-1 sm:flex-none sm:ml-auto">
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Play size={18} fill="currentColor" />
+              )}
+              {loading ? 'Crunching Numbers...' : 'Run Engine'}
+            </Button>
+          </div>
 
-              <div className="w-full md:col-span-4 relative">
-                <label className="text-xs text-zinc-500 mb-1.5 font-semibold uppercase tracking-wider block md:hidden">Asset Ticker</label>
-                <input
-                  type="text"
-                  value={item.ticker}
-                  onChange={(e) => updateItem(index, 'ticker', e.target.value.toUpperCase())}
-                  placeholder="e.g. AAPL, RELIANCE.NS"
-                  className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all uppercase"
-                />
-              </div>
-              <div className="w-full md:col-span-3 relative">
-                <label className="text-xs text-zinc-500 mb-1.5 font-semibold uppercase tracking-wider block md:hidden">Investment Amount</label>
-                <input
-                  type="number"
-                  value={item.amount || ''}
-                  onChange={(e) => updateItem(index, 'amount', parseFloat(e.target.value))}
-                  placeholder="1000"
-                  className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-mono"
-                />
-              </div>
-              <div className="w-full md:col-span-3 relative">
-                <label className="text-xs text-zinc-500 mb-1.5 font-semibold uppercase tracking-wider block md:hidden">Avg Price Bought (Optional)</label>
-                <input
-                  type="number"
-                  value={item.avg_price || ''}
-                  onChange={(e) => updateItem(index, 'avg_price', parseFloat(e.target.value))}
-                  placeholder="Optional"
-                  className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-mono"
-                />
-              </div>
-              <div className="w-full md:col-span-2 flex justify-end mt-2 md:mt-0 pt-3 md:pt-0 border-t border-white/5 md:border-none">
-                <button
-                  onClick={() => removeItem(index)}
-                  disabled={items.length <= 1}
-                  className="p-2 w-full md:w-auto flex items-center justify-center gap-2 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-zinc-500"
-                >
-                  <Trash2 size={16} />
-                  <span className="text-sm font-medium block md:hidden">Remove Asset</span>
-                </button>
-              </div>
+          {error && (
+            <div className="mt-4 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 flex items-start gap-3">
+              <AlertCircle size={20} className="mt-0.5 shrink-0" />
+              <p className="text-sm">{error}</p>
             </div>
-          ))}
-        </div>
+          )}
+        </Card>
 
-        <div className="flex items-center justify-between pt-4 border-t border-white/5">
-          <button
-            onClick={addItem}
-            className="flex items-center gap-2 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors px-3 py-2 rounded-lg hover:bg-indigo-500/10"
-          >
-            <Plus size={16} /> Add Asset
-          </button>
+        {/* Dashboards */}
+        {analysis && simulation && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 relative z-10 animate-[fadeIn_0.5s_ease-out]">
+            <div className="flex gap-3 mb-8 bg-black/40 p-1.5 rounded-2xl w-fit backdrop-blur-xl border border-white/10 shadow-2xl">
+              <button
+                onClick={() => setActiveTab('analysis')}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold tracking-wide flex items-center gap-2 transition-all duration-300 ${activeTab === 'analysis'
+                  ? 'bg-white text-black shadow-lg translate-y-[-2px]'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  }`}
+              >
+                <Shield size={16} /> Risk Analysis
+              </button>
+              <button
+                onClick={() => setActiveTab('simulation')}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold tracking-wide flex items-center gap-2 transition-all duration-300 ${activeTab === 'simulation'
+                  ? 'bg-white text-black shadow-lg translate-y-[-2px]'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  }`}
+              >
+                <LineChart size={16} /> Physics Monte Carlo
+              </button>
+            </div>
 
-          <button
-            onClick={analyzePortfolio}
-            disabled={loading}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-2.5 rounded-lg transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : <TrendingUp size={18} />}
-            {loading ? 'Analyzing...' : 'Analyze Portfolio'}
-          </button>
-        </div>
-
-        {error && (
-          <div className="mt-4 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 flex items-start gap-3">
-            <AlertCircle size={20} className="mt-0.5 shrink-0" />
-            <p className="text-sm">{error}</p>
+            <div className="transition-all duration-500 relative">
+              {activeTab === 'analysis' ? (
+                <div className="animate-[slideUp_0.4s_ease-out]"><Dashboard analysis={analysis} /></div>
+              ) : (
+                <div className="animate-[slideUp_0.4s_ease-out]"><SimulationDashboard simulation={simulation} /></div>
+              )}
+            </div>
           </div>
         )}
-      </Card>
-
-      {/* Dashboards */}
-      {results && (
-        <div className="space-y-8 mt-12 pb-12">
-          <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-500 py-2 border-b border-white/5">
-            Statistical & Risk Profile
-          </h3>
-          <Dashboard results={results} />
-
-          {simulationResults && (
-            <>
-              <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-500 py-2 border-b border-white/5 mt-16 pb-2">
-                Monte Carlo Simulation
-              </h3>
-              <SimulationDashboard results={simulationResults} />
-            </>
-          )}
-        </div>
-      )}
-
-    </div>
+      </div>
+    </main>
   );
 }
